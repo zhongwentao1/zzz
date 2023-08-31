@@ -1,6 +1,16 @@
 const UserModel = require("../../models/UserModel")
 
 const UserService = {
+    uploadUserInfo: async ({}) => {
+
+    },
+    isEnroll: async ({
+        username
+    }) => {
+        return UserModel.find({
+            username,
+        })
+    },
     login: async ({
         username,
         password
@@ -10,11 +20,10 @@ const UserService = {
             password
         })
     },
-    getUserInfo: async ({
-        username
-    }) => {
+    getUserInfo: async (_id) => {
+        console.log('_id', _id);
         return UserModel.find({
-            username
+            _id
         })
     }
 }

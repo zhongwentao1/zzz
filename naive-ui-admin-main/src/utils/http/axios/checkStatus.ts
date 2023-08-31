@@ -1,3 +1,7 @@
+import { PageEnum } from '@/enums/pageEnum';
+import router from '@/router';
+import { storage } from '@/utils/Storage';
+
 export function checkStatus(status: number, msg: string): void {
   const $message = window['$message'];
   switch (status) {
@@ -9,6 +13,24 @@ export function checkStatus(status: number, msg: string): void {
     // 在登录成功后返回当前页面，这一步需要在登录页操作。
     case 401:
       $message.error('用户没有权限（令牌、用户名、密码错误）!');
+      const LoginName = PageEnum.BASE_LOGIN_NAME;
+      const LoginPath = PageEnum.BASE_LOGIN;
+      if (router.currentRoute.value?.name === LoginName) return;
+      // 到登录页
+      const $dialog = window['$dialog'];
+      $dialog.warning({
+        title: '提示',
+        content: '登录身份已失效，请重新登录!',
+        positiveText: '确定',
+        //negativeText: '取消',
+        closable: false,
+        maskClosable: false,
+        onPositiveClick: () => {
+          storage.clear();
+          window.location.href = LoginPath;
+        },
+        onNegativeClick: () => {},
+      });
       break;
     case 403:
       $message.error('用户得到授权，但是访问是被禁止的。!');

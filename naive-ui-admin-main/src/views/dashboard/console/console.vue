@@ -324,7 +324,32 @@
   ];
 
   onMounted(async () => {
-    const data = await getConsoleInfo();
+    // const data = await getConsoleInfo();
+    const data =  {
+        "visits": {
+            "dayVisits": 71327.44,
+            "rise": 60.386305755023336,
+            "decline": 90.18826864388,
+            "amount": 261958.6812
+        },
+        "saleroom": {
+            "weekSaleroom": 48690.83,
+            "amount": 229337.18,
+            "degree": 37.87724
+        },
+        "orderLarge": {
+            "weekLarge": 75143.18,
+            "rise": 84.3,
+            "decline": 37.654460396,
+            "amount": 793453.28
+        },
+        "volume": {
+            "weekLarge": 22816.69,
+            "rise": 87.4671765152825,
+            "decline": 63.315621498236915,
+            "amount": 334139.73
+        }
+    };
     visits.value = data.visits;
     saleroom.value = data.saleroom;
     orderLarge.value = data.orderLarge;

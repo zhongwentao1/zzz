@@ -10,6 +10,7 @@ const userType = {
     avatar: String, //头像
     role: Number, //权限 或者说 身份
     permissions: Array, //路由权限
+    token: String,
 }
 const UserModel = mongoose.model("user", new Schema(userType))
 module.exports = UserModel

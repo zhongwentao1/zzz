@@ -1,6 +1,8 @@
 import { http } from '@/utils/http/axios';
-import axios from 'axios';
+import { string } from 'vue-types';
 export interface BasicResponseModel<T = any> {
+  permissions: string[];
+  msg: any;
   code: number;
   message: string;
   result: T;
@@ -11,37 +13,50 @@ export interface BasicPageParams {
   pageSize: number;
   total: number;
 }
-
+/**
+ * @description: 检验用户用是否重复
+ */
+export async function isEnroll(params: { username: string }) {
+  return http.request<BasicResponseModel<string>>(
+    {
+      url: 'api/adminapi/is_enroll',
+      method: 'POST',
+      params,
+    },
+    {
+      isTransformResponse: false,
+    }
+  );
+}
 /**
  * @description: 获取用户信息
  */
-export function getUserInfo() {
-  return axios.get('/adminapi/admin_info').then((res) => {
-    console.log(res.data);
-    return res.data;
-  });
-  return http.request({
-    url: '/adminapi/admin_info',
-    method: 'get',
-  });
+export async function getUserInfo() {
+  return http.request<BasicResponseModel>(
+    {
+      url: 'api/adminapi/admin_info',
+      method: 'GET',
+    },
+    {
+      isTransformResponse: false,
+      joinParamsToUrl: false,
+    }
+  );
 }
 
 /**
  * @description: 用户登录
  */
 export function login(params) {
-  return axios.post('/adminapi/user/login', params).then((res) => {
-    console.log(res.data);
-    return res.data;
-  });
   return http.request<BasicResponseModel>(
     {
-      url: '/adminapi/user/login',
+      url: '/api/adminapi/user/login',
       method: 'POST',
       params,
     },
     {
       isTransformResponse: false,
+      withToken: false,
     }
   );
 }
@@ -70,5 +85,16 @@ export function logout(params) {
     url: '/login/logout',
     method: 'POST',
     params,
+  });
+}
+/**
+ * @description: 用户基本信息修改
+ */
+
+export function uploadUserInfo() {
+  return http.request({
+    url: '/api/adminapi/admin_info',
+    method: 'GET',
+    // params,
   });
 }

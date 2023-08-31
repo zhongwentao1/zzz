@@ -4,7 +4,7 @@ const secret = 'zzz'
 const JWT = {
     generate(value, expires) { //value :token  expires:过期时间
         return jsonwebtoken.sign(value, secret, {
-            expiresIn: expires
+            expiresIn: expires || "1d"
         })
     },
     verify(token) {

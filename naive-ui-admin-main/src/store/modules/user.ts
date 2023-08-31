@@ -10,6 +10,9 @@ export type UserInfoType = {
   // TODO: add your own data
   name: string;
   email: string;
+  permissions: string[];
+  desc: string;
+  realName: string;
 };
 
 export interface IUserState {
@@ -17,7 +20,7 @@ export interface IUserState {
   username: string;
   welcome: string;
   avatar: string;
-  permissions: any[];
+  permissions: [string][];
   info: UserInfoType;
 }
 
@@ -41,7 +44,7 @@ export const useUserStore = defineStore({
     getNickname(): string {
       return this.username;
     },
-    getPermissions(): [any][] {
+    getPermissions(): [string][] {
       return this.permissions;
     },
     getUserInfo(): UserInfoType {
@@ -67,6 +70,9 @@ export const useUserStore = defineStore({
       const { result, code } = response;
       if (code === ResultEnum.SUCCESS) {
         const ex = 7 * 24 * 60 * 60;
+        // ---
+        localStorage.setItem('TOKEN', result.token);
+
         storage.set(ACCESS_TOKEN, result.token, ex);
         storage.set(CURRENT_USER, result, ex);
         storage.set(IS_SCREENLOCKED, false);
@@ -78,34 +84,9 @@ export const useUserStore = defineStore({
 
     // 获取用户信息
     async getInfo() {
-      const result = await getUserInfoApi();
-      console.log(result);
+      const { result } = await getUserInfoApi();
+      console.log('result', result);
 
-      if (!result.permissions) {
-        let testList = [
-          {
-            label: '主控台',
-            value: 'dashboard_console',
-          },
-          {
-            label: '监控页',
-            value: 'dashboard_monitor',
-          },
-          {
-            label: '工作台',
-            value: 'dashboard_workplace',
-          },
-          {
-            label: '基础列表',
-            value: 'basic_list',
-          },
-          {
-            label: '基础列表删除',
-            value: 'basic_list_delete',
-          },
-        ];
-        result.permissions = testList;
-      }
       if (result.permissions && result.permissions.length) {
         const permissionsList = result.permissions;
 
@@ -121,7 +102,13 @@ export const useUserStore = defineStore({
     // 登出
     async logout() {
       this.setPermissions([]);
-      this.setUserInfo({ name: '', email: '' });
+      this.setUserInfo({
+        name: '',
+        email: '',
+        permissions: [],
+        desc: '',
+        realName: '',
+      });
       storage.remove(ACCESS_TOKEN);
       storage.remove(CURRENT_USER);
     },

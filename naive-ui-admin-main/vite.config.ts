@@ -45,25 +45,25 @@ export default ({ command, mode }: ConfigEnv): UserConfig => {
     define: {
       __APP_INFO__: JSON.stringify(__APP_INFO__),
     },
+    server: {
+      host: true,
+      port: VITE_PORT,
+      proxy: createProxy(VITE_PROXY),
+      // proxy: {
+      //   '/adminapi': {
+      //     target: 'http://localhost:3000',
+      //     changeOrigin: true,
+      //   },
+      // },
+    },
     // server: {
-    //   host: true,
-    //   port: VITE_PORT,
-    //   // proxy: createProxy(VITE_PROXY),
     //   proxy: {
-    //     '/api': {
+    //     '/adminapi': {
     //       target: 'http://localhost:3000',
     //       changeOrigin: true,
     //     },
     //   },
     // },
-    server: {
-      proxy: {
-        '/adminapi': {
-          target: 'http://localhost:3000',
-          changeOrigin: true,
-        },
-      },
-    },
     optimizeDeps: {
       include: [],
       exclude: ['vue-demi'],

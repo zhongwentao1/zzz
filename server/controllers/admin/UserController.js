@@ -1,6 +1,29 @@
-const UserService = require('../../servers/admin/UserService')
-const JWT = require('../../utils/jwt')
+const UserService = require('../../servers/admin/UserService');
+const url = require("url")
+const JWT = require('../../utils/jwt');
 const UserController = {
+    //获取主控台信息
+    getConsoleInfo: async (req, res) => {
+        res.send({
+            code: 200,
+            msg: "成功"
+        })
+    },
+    //更新用户基本信息
+    uploadUserInfo: async (req, res) => {
+        res.send({
+            code: 200,
+            msg: "成功"
+        })
+    },
+    //是否注册
+    isEnroll: async (req, res) => {
+        let result = await UserService.isEnroll(req.body);
+        res.send({
+            code: result.length ? 200 : -1,
+            msg: result.length ? "OK" : "用户不存在"
+        })
+    },
     login: async (req, res) => {
         //req.body
         let result = await UserService.login(req.body)
@@ -10,7 +33,6 @@ const UserController = {
                 msg: '用户名密码不匹配'
             })
         } else {
-            console.log(result);
 
             //JWT登录生成token
             const token = JWT.generate({
@@ -29,23 +51,26 @@ const UserController = {
             })
         }
     },
+    //获取用户信息
     getUserInfo: async (req, res) => {
-        //req.body
+        const token = req.headers["authorization"].split(" ")[1];
+        const payload = JWT.verify(token);
+        console.log("payload", payload);
+        let result = await UserService.getUserInfo(payload._id);
 
-        let result = await UserService.getUserInfo(req.body);
-        console.log(result);
         if (result.length === 0) {
             res.send({
-                code: "-1",
-                msg: '用户不存在'
+                code: "200",
+                msg: '用户不存在',
             })
         } else {
-            console.log(result);
+            result = result[0]
+            result.token = token
             res.send({
                 code: 200,
                 msg: "ok",
-                type: "success"
-
+                type: "success",
+                result
             })
         }
     }

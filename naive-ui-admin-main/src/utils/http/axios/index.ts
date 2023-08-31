@@ -30,7 +30,13 @@ const transform: AxiosTransform = {
   /**
    * @description: 处理请求数据
    */
+  //响应拦截
   transformRequestData: (res: AxiosResponse<Result>, options: RequestOptions) => {
+    if (res.headers.authorization) {
+      localStorage.setItem('TOKEN', res.headers.authorization);
+      const ex = 7 * 24 * 60 * 60;
+      storage.set('ACCESS_TOKEN', res.headers.authorization, ex);
+    }
     const {
       isShowMessage = true,
       isShowErrorMessage,
@@ -178,11 +184,14 @@ const transform: AxiosTransform = {
     // 请求之前处理config
     const userStore = useUser();
     const token = userStore.getToken;
+    // const token = localStorage.getItem('TOKEN');
     if (token && (config as Recordable)?.requestOptions?.withToken !== false) {
       // jwt token
-      (config as Recordable).headers.Authorization = options.authenticationScheme
-        ? `${options.authenticationScheme} ${token}`
-        : token;
+      // (config as Recordable).headers.Authorization = options.authenticationScheme
+      //   ? `${options.authenticationScheme} ${token}`
+      //   : token;
+      //----
+      (config as Recordable).headers.Authorization = `Bearer ${token}`;
     }
     return config;
   },

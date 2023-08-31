@@ -1,3 +1,4 @@
+const JWT = require('./utils/jwt')
 var createError = require('http-errors');
 var express = require('express');
 var path = require('path');
@@ -35,6 +36,33 @@ adminapi  --后台系统用
 webapi  --前台使用
 
 */
+//统一处理 是否检验token
+app.use((req, res, next) => {
+    console.log(req.url);
+    if (req.url === '/adminapi/user/login' || req.url === '/adminapi/is_enroll') {
+        next();
+        return
+    } else {
+        console.log("111111111111111111111111111111111111111111111");
+        const token = req.headers["authorization"].split(" ")[1];
+        if (token) {
+            const payload = JWT.verify(token);
+            if (payload) {
+                const newToken = JWT.generate({
+                    _id: payload._id,
+                    username: payload.username
+                }, "1d");
+                res.header("authorization", newToken);
+                next();
+            } else {
+                res.status(401).send({
+                    code: "401",
+                    msg: "token过期"
+                })
+            }
+        }
+    }
+})
 //注册路由
 app.use(UserRouter)
 

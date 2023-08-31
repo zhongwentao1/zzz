@@ -164,13 +164,14 @@ export class VAxios {
     // 请求拦截器配置处理
     this.axiosInstance.interceptors.request.use((config: AxiosRequestConfig) => {
       const {
-        headers: { ignoreCancelToken, authorization },
+        headers: { ignoreCancelToken },
       } = config;
+
       const ignoreCancel =
         ignoreCancelToken !== undefined
           ? ignoreCancelToken
           : this.options.requestOptions?.ignoreCancelToken;
-      authorization && localStorage.setItem('token', authorization);
+
       !ignoreCancel && axiosCanceler.addPending(config);
       if (requestInterceptors && isFunction(requestInterceptors)) {
         config = requestInterceptors(config, this.options);

@@ -6,8 +6,8 @@
           <n-input v-model:value="formValue.name" placeholder="请输入昵称" />
         </n-form-item>
 
-        <n-form-item label="邮箱" path="email">
-          <n-input placeholder="请输入邮箱" v-model:value="formValue.email" />
+        <n-form-item label="备注" path="desc">
+          <n-input placeholder="请输入邮箱" v-model:value="formValue.desc" />
         </n-form-item>
 
         <n-form-item label="联系电话" path="mobile">
@@ -29,8 +29,9 @@
 </template>
 
 <script lang="ts" setup>
-  import { reactive, ref } from 'vue';
+  import { reactive, ref, onMounted } from 'vue';
   import { useMessage } from 'naive-ui';
+  import { uploadUserInfo } from '@/api/system/user';
 
   const rules = {
     name: {
@@ -38,13 +39,13 @@
       message: '请输入昵称',
       trigger: 'blur',
     },
-    email: {
-      required: true,
-      message: '请输入邮箱',
+    desc: {
+      // required: true,
+      message: '请输入备注',
       trigger: 'blur',
     },
     mobile: {
-      required: true,
+      // required: true,
       message: '请输入联系电话',
       trigger: 'input',
     },
@@ -55,17 +56,22 @@
   const formValue = reactive({
     name: '',
     mobile: '',
-    email: '',
+    desc: '',
     address: '',
   });
 
   function formSubmit() {
-    formRef.value.validate((errors) => {
+    formRef.value.validate(async (errors) => {
       if (!errors) {
+        let res = await uploadUserInfo(formValue);
+        console.log(res);
         message.success('验证成功');
       } else {
         message.error('验证失败，请填写完整信息');
       }
     });
   }
+  onMounted(() => {
+    //获取用户信息以回显
+  });
 </script>

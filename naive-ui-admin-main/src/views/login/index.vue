@@ -88,7 +88,6 @@
 </template>
 
 <script lang="ts" setup>
-  import axios from 'axios';
   import { reactive, ref } from 'vue';
   import { useRoute, useRouter } from 'vue-router';
   import { useUserStore } from '@/store/modules/user';
@@ -97,6 +96,7 @@
   import { PersonOutline, LockClosedOutline } from '@vicons/ionicons5'; //LogoGithub, LogoFacebook其他登录方式 暂时不需要
   import { PageEnum } from '@/enums/pageEnum';
   import { websiteConfig } from '@/config/website.config';
+  import { isEnroll } from '@/api/system/user';
   interface FormState {
     username: string;
     password: string;
@@ -124,9 +124,9 @@
   const router = useRouter();
   const route = useRoute();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: any) => {
     e.preventDefault();
-    formRef.value.validate(async (errors) => {
+    formRef.value.validate(async (errors: any) => {
       if (!errors) {
         const { username, password } = formInline;
         message.loading('登录中...');
@@ -136,27 +136,24 @@
           username,
           password,
         };
-
+        let result = await isEnroll({ username });
+        console.log(result);
+        if (result.code === -1) {
+          message.destroyAll();
+          message.error(`${result.msg},请检查用户名是否正确`);
+          loading.value = false;
+          return;
+        }
         try {
-          //登录 回头优化
-          // const { code, message: msg } = await axios
-          //   .post('/adminapi/user/login', params)
-          //   .then((res) => {
-          //     console.log(res.data);
-          //     return { code: res.data.code, message: res.data.msg };
-          //   });
-          const { code, message: msg } = await userStore.login(params); //mock测试接口
-
+          const { code, message: msg } = await userStore.login(params);
           message.destroyAll();
           if (code == ResultEnum.SUCCESS) {
             const toPath = decodeURIComponent((route.query?.redirect || '/') as string);
             message.success('登录成功，即将进入系统');
-            console.log(code, message, route);
-
-            // return;
+            //
+            userStore.getInfo();
             if (route.name === LOGIN_NAME) {
               //校验完毕 前往首页
-
               router.push('/');
             } else router.replace(toPath);
           } else {

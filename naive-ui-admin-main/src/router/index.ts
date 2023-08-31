@@ -18,7 +18,6 @@ function sortRoute(a, b) {
 }
 
 routeModuleList.sort(sortRoute);
-
 export const RootRoute: RouteRecordRaw = {
   path: '/',
   name: 'Root',
