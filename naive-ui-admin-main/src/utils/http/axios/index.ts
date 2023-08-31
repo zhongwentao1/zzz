@@ -193,6 +193,7 @@ const transform: AxiosTransform = {
       //----
       (config as Recordable).headers.Authorization = `Bearer ${token}`;
     }
+    
     return config;
   },
 
