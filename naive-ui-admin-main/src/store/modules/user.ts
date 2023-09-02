@@ -8,8 +8,9 @@ import { storage } from '@/utils/Storage';
 
 export type UserInfoType = {
   // TODO: add your own data
-  name: string;
-  email: string;
+  username: string;
+  avatar: string;
+  mobile: string;
   permissions: string[];
   desc: string;
   realName: string;
@@ -71,8 +72,6 @@ export const useUserStore = defineStore({
       if (code === ResultEnum.SUCCESS) {
         const ex = 7 * 24 * 60 * 60;
         // ---
-        localStorage.setItem('TOKEN', result.token);
-
         storage.set(ACCESS_TOKEN, result.token, ex);
         storage.set(CURRENT_USER, result, ex);
         storage.set(IS_SCREENLOCKED, false);
@@ -85,8 +84,6 @@ export const useUserStore = defineStore({
     // 获取用户信息
     async getInfo() {
       const { result } = await getUserInfoApi();
-      console.log('result', result);
-
       if (result.permissions && result.permissions.length) {
         const permissionsList = result.permissions;
 
@@ -103,11 +100,12 @@ export const useUserStore = defineStore({
     async logout() {
       this.setPermissions([]);
       this.setUserInfo({
-        name: '',
-        email: '',
+        username: '',
+        mobile: '',
         permissions: [],
         desc: '',
         realName: '',
+        avatar: ''
       });
       storage.remove(ACCESS_TOKEN);
       storage.remove(CURRENT_USER);

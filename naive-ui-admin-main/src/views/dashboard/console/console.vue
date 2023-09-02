@@ -2,9 +2,52 @@
   <div class="console">
     <!--数据卡片-->
     <n-grid cols="1 s:2 m:3 l:4 xl:4 2xl:4" responsive="screen" :x-gap="12" :y-gap="8">
+            <n-grid-item>
+        <NCard
+          title="销售额"
+          :segmented="{ content: true, footer: true }"
+          size="small"
+          :bordered="false"
+        >
+          <template #header-extra>
+            <n-tag type="info">周</n-tag>
+          </template>
+          <div class="flex justify-between px-1 py-1">
+            <n-skeleton v-if="loading" :width="100" size="medium" />
+            <CountTo
+              v-else
+              prefix="￥"
+              :startVal="1"
+              :endVal="saleroom.weekSaleroom"
+              class="text-3xl"
+            />
+          </div>
+          <div class="flex justify-between px-2 py-2">
+            <div class="flex-1 text-sn">
+              <n-progress
+                type="line"
+                :percentage="saleroom.degree"
+                :indicator-placement="'inside'"
+                processing
+              />
+            </div>
+          </div>
+          <template #footer>
+            <div class="flex justify-between">
+              <n-skeleton v-if="loading" :width="100" size="medium" />
+              <template v-else>
+                <div class="text-sn"> 总销售额： </div>
+                <div class="text-sn">
+                  <CountTo prefix="￥" :startVal="1" :endVal="saleroom.amount" />
+                </div>
+              </template>
+            </div>
+          </template>
+        </NCard>
+      </n-grid-item>
       <n-grid-item>
         <NCard
-          title="访问量"
+          title="压单额"
           :segmented="{ content: true, footer: true }"
           size="small"
           :bordered="false"
@@ -51,49 +94,7 @@
           </template>
         </NCard>
       </n-grid-item>
-      <n-grid-item>
-        <NCard
-          title="销售额"
-          :segmented="{ content: true, footer: true }"
-          size="small"
-          :bordered="false"
-        >
-          <template #header-extra>
-            <n-tag type="info">周</n-tag>
-          </template>
-          <div class="flex justify-between px-1 py-1">
-            <n-skeleton v-if="loading" :width="100" size="medium" />
-            <CountTo
-              v-else
-              prefix="￥"
-              :startVal="1"
-              :endVal="saleroom.weekSaleroom"
-              class="text-3xl"
-            />
-          </div>
-          <div class="flex justify-between px-2 py-2">
-            <div class="flex-1 text-sn">
-              <n-progress
-                type="line"
-                :percentage="saleroom.degree"
-                :indicator-placement="'inside'"
-                processing
-              />
-            </div>
-          </div>
-          <template #footer>
-            <div class="flex justify-between">
-              <n-skeleton v-if="loading" :width="100" size="medium" />
-              <template v-else>
-                <div class="text-sn"> 总销售额： </div>
-                <div class="text-sn">
-                  <CountTo prefix="￥" :startVal="1" :endVal="saleroom.amount" />
-                </div>
-              </template>
-            </div>
-          </template>
-        </NCard>
-      </n-grid-item>
+
       <n-grid-item>
         <NCard
           title="订单量"

@@ -150,8 +150,6 @@
           if (code == ResultEnum.SUCCESS) {
             const toPath = decodeURIComponent((route.query?.redirect || '/') as string);
             message.success('登录成功，即将进入系统');
-            //
-            userStore.getInfo();
             if (route.name === LOGIN_NAME) {
               //校验完毕 前往首页
               router.push('/');

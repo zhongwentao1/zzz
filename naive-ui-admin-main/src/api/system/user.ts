@@ -1,5 +1,5 @@
 import { http } from '@/utils/http/axios';
-import { string } from 'vue-types';
+
 export interface BasicResponseModel<T = any> {
   permissions: string[];
   msg: any;
@@ -19,7 +19,7 @@ export interface BasicPageParams {
 export async function isEnroll(params: { username: string }) {
   return http.request<BasicResponseModel<string>>(
     {
-      url: 'api/adminapi/is_enroll',
+      url: '/api/adminapi/is_enroll',
       method: 'POST',
       params,
     },
@@ -34,7 +34,7 @@ export async function isEnroll(params: { username: string }) {
 export async function getUserInfo() {
   return http.request<BasicResponseModel>(
     {
-      url: 'api/adminapi/admin_info',
+      url: '/api/adminapi/admin_info',
       method: 'GET',
     },
     {
@@ -91,10 +91,15 @@ export function logout(params) {
  * @description: 用户基本信息修改
  */
 
-export function uploadUserInfo() {
-  return http.request({
-    url: '/api/adminapi/admin_info',
-    method: 'GET',
-    // params,
-  });
+export function updateUserInfo(params) {
+  return http.request(
+    {
+      url: '/api/adminapi/user/updateUserInfo',
+      method: 'POST',
+      params,
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    },
+  );
 }

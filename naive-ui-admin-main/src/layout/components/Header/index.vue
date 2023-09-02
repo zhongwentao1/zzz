@@ -158,12 +158,12 @@
       const dialog = useDialog();
       const { navMode, navTheme, headerSetting, menuSetting, crumbsSetting } = useProjectSetting();
 
-      const { name } = userStore?.info || {};
+      const { username } = userStore?.info || {};
 
       const drawerSetting = ref();
 
       const state = reactive({
-        username: name ?? '',
+        username: username ?? '',
         fullscreenIcon: 'FullscreenOutlined',
         navMode,
         navTheme,

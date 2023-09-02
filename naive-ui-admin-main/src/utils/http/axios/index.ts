@@ -33,9 +33,9 @@ const transform: AxiosTransform = {
   //响应拦截
   transformRequestData: (res: AxiosResponse<Result>, options: RequestOptions) => {
     if (res.headers.authorization) {
-      localStorage.setItem('TOKEN', res.headers.authorization);
+      storage.set('TOKEN', res.headers.authorization);
       const ex = 7 * 24 * 60 * 60;
-      storage.set('ACCESS_TOKEN', res.headers.authorization, ex);
+      storage.set('ACCESS-TOKEN', res.headers.authorization, ex);
     }
     const {
       isShowMessage = true,
@@ -180,11 +180,12 @@ const transform: AxiosTransform = {
   /**
    * @description: 请求拦截器处理
    */
-  requestInterceptors: (config, options) => {
+  requestInterceptors: (config, opt) => {
     // 请求之前处理config
-    const userStore = useUser();
-    const token = userStore.getToken;
-    // const token = localStorage.getItem('TOKEN');
+
+    // const userStore = useUser();
+    // const token = userStore.getToken;
+    const token = storage.get('TOKEN');
     if (token && (config as Recordable)?.requestOptions?.withToken !== false) {
       // jwt token
       // (config as Recordable).headers.Authorization = options.authenticationScheme
@@ -193,7 +194,7 @@ const transform: AxiosTransform = {
       //----
       (config as Recordable).headers.Authorization = `Bearer ${token}`;
     }
-    
+
     return config;
   },
 
@@ -271,7 +272,7 @@ function createAxios(opt?: Partial<CreateAxiosOptions>) {
           // 接口拼接地址
           urlPrefix: urlPrefix,
           //  是否加入时间戳
-          joinTime: true,
+          joinTime: false,
           // 忽略重复请求
           ignoreCancelToken: true,
           // 是否携带token
