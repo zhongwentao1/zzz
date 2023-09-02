@@ -23,9 +23,7 @@ export async function isEnroll(params: { username: string }) {
       method: 'POST',
       params,
     },
-    {
-      isTransformResponse: false,
-    }
+
   );
 }
 /**
@@ -55,7 +53,6 @@ export function login(params) {
       params,
     },
     {
-      isTransformResponse: false,
       withToken: false,
     }
   );
@@ -71,9 +68,7 @@ export function changePassword(params, uid) {
       method: 'POST',
       params,
     },
-    {
-      isTransformResponse: false,
-    }
+
   );
 }
 
@@ -101,5 +96,8 @@ export function updateUserInfo(params) {
         'Content-Type': 'multipart/form-data',
       },
     },
+    {
+      isTransformResponse: false,
+    }
   );
 }

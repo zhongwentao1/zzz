@@ -8,9 +8,7 @@ export async function getConsoleInfo() {
       url: 'api/adminapi/dashboard/console',
       method: 'GET',
     },
-    {
-      isTransformResponse: false,
-    }
+ 
   );
 }
 export async function getUserInfo() {
@@ -19,8 +17,6 @@ export async function getUserInfo() {
       url: 'api/adminapi/admin_info',
       method: 'GET',
     },
-    {
-      isTransformResponse: false,
-    }
+    
   );
 }

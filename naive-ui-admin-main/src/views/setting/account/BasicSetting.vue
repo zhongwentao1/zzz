@@ -14,7 +14,7 @@
           <n-input placeholder="请输入手机号" v-model:value="formValue.mobile" />
         </n-form-item>
 
-        <n-form-item label="头像" path="avater">
+        <!-- <n-form-item label="头像" path="avater">
           <BasicUpload
             :action="`${uploadUrl}/v1.0/files`"
             :maxNumber="1"
@@ -22,7 +22,7 @@
             v-model:value="formValue.avatar"
             @change="flieChange"
           />
-        </n-form-item>
+        </n-form-item> -->
         <div>
           <n-space>
             <n-button type="primary" @click="formSubmit">更新基本信息</n-button>
@@ -50,7 +50,7 @@
       trigger: 'blur',
     },
     desc: {
-      required: true,
+      // required: true,
       message: '请输入备注--之后会改成权限相关功能',
       trigger: 'blur',
     },
@@ -70,23 +70,23 @@
     username: string;
     mobile: String;
     desc: string;
-    avatar: string[];
+    // avatar: string[];
     file: any;
   };
   const formValue = ref<from>({
     username: '',
     mobile: '',
     desc: '',
-    avatar: [],
+    // avatar: [],
     file: {},
   });
   //文件改变
-  const flieChange = (flie: any, b, c) => {
-    console.log(flie, b, c);
+  // const flieChange = (flie: any, b, c) => {
+  //   console.log(flie, b, c);
 
-    formValue.value.avatar = flie.file.file.url;
-    formValue.value.file = flie.file.file; //组件三层嵌套
-  };
+  //   formValue.value.avatar = flie.file.file.url;
+  //   formValue.value.file = flie.file.file; //组件三层嵌套
+  // };
   function formSubmit() {
     formRef.value.validate(async (errors) => {
       if (!errors) {
@@ -95,8 +95,13 @@
           params.append(i, formValue.value[i]);
         }
         console.log(params);
-        let res = await updateUserInfo(params);
-        console.log(res);
+        let result = await updateUserInfo(params);
+        console.log(result);
+        if (result.code && result.code === 200) {
+          const userinfo = await userStore.getInfo();
+          console.log(userinfo);
+        } else {
+        }
         message.success('验证成功');
       } else {
         message.error('验证失败，请填写完整信息');
@@ -105,14 +110,13 @@
   }
   onBeforeMount(() => {
     //获取用户信息以回显
-    const { username, desc, avatar, mobile } = userStore.getUserInfo;
+    const { username, desc, mobile } = userStore.getUserInfo;//avatar
     formValue.value = {
       username,
       desc,
-      avatar: ['http://localhost:3000' + avatar],
+      // avatar: ['http://localhost:8889' + avatar],
       mobile: mobile.toString(),
       file: {},
     };
-    console.log(formValue.value.avatar);
   });
 </script>

@@ -6,7 +6,7 @@ const UserService = {
         username,
         mobile,
         desc,
-        avatar
+        // avatar
     }) => {
         console.log(_id);
         return UserModel.updateOne({
@@ -15,7 +15,7 @@ const UserService = {
             username,
             mobile,
             desc,
-            avatar
+            // avatar
         })
     },
     isEnroll: async ({

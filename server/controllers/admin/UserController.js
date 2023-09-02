@@ -11,14 +11,13 @@ const UserController = {
     },
     //更新用户基本信息
     updateUserInfo: async (req, res) => {
-        console.log(req.body, req.file);
         const {
             username,
             mobile,
             desc,
         } = req.body;
 
-        const avatar = `/avataruploads/${req.file.filename}`
+        // const avatar = `/avataruploads/${req.file.filename}`
         const token = req.headers["authorization"].split(" ")[1];
         const payload = JWT.verify(token);
         let result = await UserService.updateUserInfo({
@@ -26,12 +25,12 @@ const UserController = {
             username,
             mobile: Number(mobile),
             desc,
-            avatar,
+            // avatar,
         })
 
         res.send({
             code: 200,
-            msg: "成功"
+            result: "成功"
         })
     },
     //是否注册
