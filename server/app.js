@@ -18,6 +18,7 @@ var app = express();
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
 
+//
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({
@@ -43,16 +44,17 @@ app.use((req, res, next) => {
         next();
         return
     } else {
-        console.log("111111111111111111111111111111111111111111111");
         const token = req.headers["authorization"].split(" ")[1];
         if (token) {
             const payload = JWT.verify(token);
+            console.log('token', token, payload);
+
             if (payload) {
                 const newToken = JWT.generate({
                     _id: payload._id,
                     username: payload.username
                 }, "1d");
-                res.header("authorization", newToken);
+                res.header("Authorization", newToken);
                 next();
             } else {
                 res.status(401).send({

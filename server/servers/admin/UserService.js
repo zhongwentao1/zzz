@@ -1,8 +1,22 @@
 const UserModel = require("../../models/UserModel")
 
 const UserService = {
-    uploadUserInfo: async ({}) => {
-
+    updateUserInfo: async ({
+        _id,
+        username,
+        mobile,
+        desc,
+        avatar
+    }) => {
+        console.log(_id);
+        return UserModel.updateOne({
+            _id
+        }, {
+            username,
+            mobile,
+            desc,
+            avatar
+        })
     },
     isEnroll: async ({
         username
@@ -21,7 +35,6 @@ const UserService = {
         })
     },
     getUserInfo: async (_id) => {
-        console.log('_id', _id);
         return UserModel.find({
             _id
         })

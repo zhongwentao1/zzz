@@ -10,7 +10,25 @@ const UserController = {
         })
     },
     //更新用户基本信息
-    uploadUserInfo: async (req, res) => {
+    updateUserInfo: async (req, res) => {
+        console.log(req.body, req.file);
+        const {
+            username,
+            mobile,
+            desc,
+        } = req.body;
+
+        const avatar = `/avataruploads/${req.file.filename}`
+        const token = req.headers["authorization"].split(" ")[1];
+        const payload = JWT.verify(token);
+        let result = await UserService.updateUserInfo({
+            _id: payload._id,
+            username,
+            mobile: Number(mobile),
+            desc,
+            avatar,
+        })
+
         res.send({
             code: 200,
             msg: "成功"
@@ -55,7 +73,6 @@ const UserController = {
     getUserInfo: async (req, res) => {
         const token = req.headers["authorization"].split(" ")[1];
         const payload = JWT.verify(token);
-        console.log("payload", payload);
         let result = await UserService.getUserInfo(payload._id);
 
         if (result.length === 0) {
@@ -64,6 +81,7 @@ const UserController = {
                 msg: '用户不存在',
             })
         } else {
+
             result = result[0]
             result.token = token
             res.send({
