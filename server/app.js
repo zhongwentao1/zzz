@@ -8,10 +8,9 @@ var logger = require('morgan');
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 
-var userLogin = require('./routes/login');
-
 var UserRouter = require('./routes/admin/UserRouter');
 var InventoryRouter = require('./routes/inventory/inventoryRouter');
+var OrdersRouter = require('./routes/orders/ordersRouter');
 
 var app = express();
 
@@ -66,6 +65,7 @@ app.use((req, res, next) => {
 //注册路由
 app.use(UserRouter) //用户路由相关
 app.use(InventoryRouter) //库存路由相关
+app.use(OrdersRouter) //订单路由相关
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

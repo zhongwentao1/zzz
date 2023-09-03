@@ -9,7 +9,7 @@
     <BasicTable
       :columns="columns"
       :request="loadDataTable"
-      :row-key="(row:ListData) => row.id"
+      :row-key="(row:ListData) => row._id"
       ref="actionRef"
       :actionColumn="actionColumn"
       @update:checked-row-keys="onCheckedRow"
@@ -65,7 +65,7 @@
   import { h, reactive, ref } from 'vue';
   import { BasicTable, TableAction } from '@/components/Table';
   import { BasicForm, FormSchema, useForm } from '@/components/Form/index';
-  import { getTableList } from '@/api/table/list';
+  import { ordersList } from '@/api/orders/orders.ts';
   import { columns, ListData } from './columns';
   import { PlusOutlined } from '@vicons/antd';
   import { useRouter } from 'vue-router';
@@ -227,7 +227,7 @@
   });
 
   const actionColumn = reactive({
-    width: 220,
+    width: 80,
     title: '操作',
     key: 'action',
     fixed: 'right',
@@ -254,23 +254,23 @@
             auth: ['basic_list'],
           },
         ],
-        dropDownActions: [
-          {
-            label: '启用',
-            key: 'enabled',
-            // 根据业务控制是否显示: 非enable状态的不显示启用按钮
-            ifShow: () => {
-              return true;
-            },
-          },
-          {
-            label: '禁用',
-            key: 'disabled',
-            ifShow: () => {
-              return true;
-            },
-          },
-        ],
+        // dropDownActions: [
+        //   {
+        //     label: '启用',
+        //     key: 'enabled',
+        //     // 根据业务控制是否显示: 非enable状态的不显示启用按钮
+        //     ifShow: () => {
+        //       return true;
+        //     },
+        //   },
+        //   {
+        //     label: '禁用',
+        //     key: 'disabled',
+        //     ifShow: () => {
+        //       return true;
+        //     },
+        //   },
+        // ],
         select: (key) => {
           window['$message'].info(`您点击了，${key} 按钮`);
         },
@@ -289,7 +289,7 @@
   }
 
   const loadDataTable = async (res) => {
-    return await getTableList({ ...getFieldsValue(), ...res });
+    return await ordersList({ ...res });
   };
 
   function onCheckedRow(rowKeys) {
@@ -327,14 +327,6 @@
     window['$message'].info('点击了删除');
   }
 
-  function handleSubmit(values: Recordable) {
-    console.log(values);
-    reloadTable();
-  }
-
-  function handleReset(values: Recordable) {
-    console.log(values);
-  }
 </script>
 
 <style lang="less" scoped></style>

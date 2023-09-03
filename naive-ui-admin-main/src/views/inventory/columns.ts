@@ -4,7 +4,7 @@ import { BasicColumn } from '@/components/Table';
 export interface ListData {
   fig: string;
   suggestion: string;
-  id: string;
+  _id: string;
   trade: String; //商品名
   Supply: Number; //进货价
   quantity: Number; //库存

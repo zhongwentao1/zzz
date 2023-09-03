@@ -72,7 +72,7 @@ export function useDataSource(
         // The params parameter can be modified by outsiders
         params = (await beforeRequest(params)) || params;
       }
-      const res = await request(params);
+      const { result: res } = await request(params);
       const resultTotal = res[totalField];
       const currentPage = res[pageField];
       const total = res[itemCount];
