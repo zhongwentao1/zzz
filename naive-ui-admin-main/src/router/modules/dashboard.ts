@@ -25,7 +25,7 @@ const routes: Array<RouteRecordRaw> = [
       title: 'Dashboard',
       icon: renderIcon(DashboardOutlined),
       permissions: ['dashboard_console', 'dashboard_console', 'dashboard_workplace'],
-      sort: 0,
+      sort: 2,
     },
     children: [
       {

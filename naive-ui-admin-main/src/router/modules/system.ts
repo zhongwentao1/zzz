@@ -23,7 +23,7 @@ const routes: Array<RouteRecordRaw> = [
     meta: {
       title: '系统设置',
       icon: renderIcon(OptionsSharp),
-      sort: 1,
+      sort: 2,
     },
     children: [
       {

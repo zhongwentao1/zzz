@@ -11,6 +11,7 @@ var usersRouter = require('./routes/users');
 var userLogin = require('./routes/login');
 
 var UserRouter = require('./routes/admin/UserRouter');
+var InventoryRouter = require('./routes/inventory/inventoryRouter');
 
 var app = express();
 
@@ -39,7 +40,6 @@ webapi  --前台使用
 */
 //统一处理 是否检验token
 app.use((req, res, next) => {
-    console.log(req.url);
     if (req.url === '/adminapi/user/login' || req.url === '/adminapi/is_enroll') {
         next();
         return
@@ -47,8 +47,6 @@ app.use((req, res, next) => {
         const token = req.headers["authorization"].split(" ")[1];
         if (token) {
             const payload = JWT.verify(token);
-            console.log('token', token, payload);
-
             if (payload) {
                 const newToken = JWT.generate({
                     _id: payload._id,
@@ -66,7 +64,8 @@ app.use((req, res, next) => {
     }
 })
 //注册路由
-app.use(UserRouter)
+app.use(UserRouter) //用户路由相关
+app.use(InventoryRouter) //库存路由相关
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
