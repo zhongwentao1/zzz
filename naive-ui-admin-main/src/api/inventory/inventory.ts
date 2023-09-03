@@ -15,9 +15,5 @@ export async function inventoryList(params: { trade?: string; _id?: string }) {
       url: '/api/Inventory/inventoryList',
       method: 'POST',
       params,
-    },
-    {
-      isTransformResponse: true,
-    }
-  );
+    });
 }
