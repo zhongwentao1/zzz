@@ -14,7 +14,7 @@
           <n-input placeholder="请输入手机号" v-model:value="formValue.mobile" />
         </n-form-item>
 
-        <!-- <n-form-item label="头像" path="avater">
+        <n-form-item label="头像" path="avater">
           <BasicUpload
             :action="`${uploadUrl}/v1.0/files`"
             :maxNumber="1"
@@ -22,7 +22,7 @@
             v-model:value="formValue.avatar"
             @change="flieChange"
           />
-        </n-form-item> -->
+        </n-form-item>
         <div>
           <n-space>
             <n-button type="primary" @click="formSubmit">更新基本信息</n-button>
@@ -42,7 +42,6 @@
   const userStore = useUser();
   const globSetting = useGlobSetting();
   const { uploadUrl } = globSetting;
-
   const rules = {
     username: {
       required: true,
@@ -55,6 +54,7 @@
       trigger: 'blur',
     },
     mobile: {
+      message: '请输入手机号',
       validator: (_rule, value: string) => {
         const phoneTest = /^1(3|4|7|5|8)([0-9]{9})/;
         return phoneTest.test(value);
@@ -63,30 +63,28 @@
       trigger: ['input', 'blur'],
     },
   };
-
   const formRef: any = ref(null);
   const message = useMessage();
   type from = {
     username: string;
     mobile: String;
     desc: string;
-    // avatar: string[];
+    avatar: string[];
     file: any;
   };
   const formValue = ref<from>({
     username: '',
     mobile: '',
     desc: '',
-    // avatar: [],
+    avatar: [],
     file: {},
   });
   //文件改变
-  // const flieChange = (flie: any, b, c) => {
-  //   console.log(flie, b, c);
-
-  //   formValue.value.avatar = flie.file.file.url;
-  //   formValue.value.file = flie.file.file; //组件三层嵌套
-  // };
+  const flieChange = (file: any) => {
+    formValue.value.file = file.file.file; //组件三层嵌套
+    const url = URL.createObjectURL(file.file.file);
+    formValue.value.avatar = [url];
+  };
   function formSubmit() {
     formRef.value.validate(async (errors) => {
       if (!errors) {
@@ -110,11 +108,11 @@
   }
   onBeforeMount(() => {
     //获取用户信息以回显
-    const { username, desc, mobile } = userStore.getUserInfo;//avatar
+    const { username, desc, mobile, avatar } = userStore.getUserInfo; //avatar
     formValue.value = {
       username,
       desc,
-      // avatar: ['http://localhost:8889' + avatar],
+      avatar: [ avatar],
       mobile: mobile.toString(),
       file: {},
     };

@@ -6,16 +6,15 @@ const UserService = {
         username,
         mobile,
         desc,
-        // avatar
+        avatar
     }) => {
-        console.log(_id);
         return UserModel.updateOne({
             _id
         }, {
             username,
             mobile,
             desc,
-            // avatar
+            avatar
         })
     },
     isEnroll: async ({
@@ -38,6 +37,21 @@ const UserService = {
         return UserModel.find({
             _id
         })
-    }
+    },
+    createUser: async ({
+        username,
+        password,
+        desc = ' ',
+        avatar,
+        mobile
+    }) => {
+        return UserModel.create({
+            username,
+            password,
+            desc,
+            avatar,
+            mobile: Number(mobile)
+        })
+    },
 }
 module.exports = UserService

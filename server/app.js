@@ -39,7 +39,8 @@ webapi  --前台使用
 */
 //统一处理 是否检验token
 app.use((req, res, next) => {
-    if (req.url === '/adminapi/user/login' || req.url === '/adminapi/is_enroll') {
+    let arr = ['/adminapi/user/login', '/adminapi/is_enroll', "/adminapi/user/create"]
+    if (arr.includes(req.url)) {
         next();
         return
     } else {

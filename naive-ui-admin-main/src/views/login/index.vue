@@ -47,8 +47,11 @@
               <div class="flex-initial">
                 <n-checkbox v-model:checked="autoLogin">自动登录</n-checkbox>
               </div>
-              <div class="flex-initial order-last">
+              <div class="flex-initial">
                 <a href="javascript:">忘记密码</a>
+              </div>
+              <div class="flex-initial order-last" style="margin-left: 20px">
+                <n-button text @click="showModal">注册账号</n-button>
               </div>
             </div>
           </n-form-item>
@@ -76,12 +79,66 @@
                   </n-icon>
                 </a>
               </div>
-              <div class="flex-initial" style="margin-left: auto">
-                <a href="javascript:">注册账号</a>
-              </div>
+
             </div>
           </n-form-item> -->
         </n-form>
+        <basicModal @register="modalRegister" ref="modalRef" class="basicModal" @on-ok="okModal">
+          <template #default>
+            <n-form ref="cRef" label-placement="left" size="large" :model="cUser" :rules="rules">
+              <n-form-item path="username" label="用户名" label-width="80">
+                <n-input v-model:value="cUser.username" placeholder="请输入用户名" label-width="80">
+                  <template #prefix>
+                    <n-icon size="18" color="#808695">
+                      <PersonOutline />
+                    </n-icon>
+                  </template>
+                </n-input>
+              </n-form-item>
+              <n-form-item path="password" label="密码 " label-width="80">
+                <n-input
+                  v-model:value="cUser.password"
+                  type="password"
+                  showPasswordOn="click"
+                  placeholder="请输入密码"
+                >
+                  <template #prefix>
+                    <n-icon size="18" color="#808695">
+                      <LockClosedOutline />
+                    </n-icon>
+                  </template>
+                </n-input>
+              </n-form-item>
+              <n-form-item path="mobile" label="手机号" label-width="80">
+                <n-input v-model:value="cUser.mobile" type="text" placeholder="请输入手机号">
+                  <template #prefix>
+                    <n-icon size="18" color="#808695">
+                      <LockClosedOutline />
+                    </n-icon>
+                  </template>
+                </n-input>
+              </n-form-item>
+              <n-form-item path="desc" label="备注" label-width="80">
+                <n-input v-model:value="cUser.desc" type="text">
+                  <template #prefix>
+                    <n-icon size="18" color="#808695">
+                      <LockClosedOutline />
+                    </n-icon>
+                  </template>
+                </n-input>
+              </n-form-item>
+              <n-form-item path="avatar" label="头像" label-width="80">
+                <BasicUpload
+                  :action="`${uploadUrl}/v1.0/files`"
+                  :maxNumber="1"
+                  :default-upload="false"
+                  v-model:value="cUser.avatar"
+                  @change="flieChange"
+                />
+              </n-form-item>
+            </n-form>
+          </template>
+        </basicModal>
       </div>
     </div>
   </div>
@@ -96,13 +153,27 @@
   import { PersonOutline, LockClosedOutline } from '@vicons/ionicons5'; //LogoGithub, LogoFacebook其他登录方式 暂时不需要
   import { PageEnum } from '@/enums/pageEnum';
   import { websiteConfig } from '@/config/website.config';
-  import { isEnroll } from '@/api/system/user';
+  import { isEnroll, createUser } from '@/api/system/user';
+  import { useGlobSetting } from '@/hooks/setting';
+  import { basicModal, useModal } from '@/components/Modal';
+  const [modalRegister, { openModal, closeModal, setSubLoading }] = useModal({
+    title: '用户注册',
+  });
+  async function okModal() {
+    onPositiveClick();
+  }
+  function showModal() {
+    openModal();
+  }
+  const globSetting = useGlobSetting();
+  const { uploadUrl } = globSetting;
   interface FormState {
     username: string;
     password: string;
   }
 
   const formRef = ref();
+  const cRef = ref();
   const message = useMessage();
   const loading = ref(false);
   const autoLogin = ref(true);
@@ -115,29 +186,83 @@
   });
 
   const rules = {
-    username: { required: true, message: '请输入用户名', trigger: 'blur' },
-    password: { required: true, message: '请输入密码', trigger: 'blur' },
+    username: { required: true, message: '用户名不能为空', trigger: 'blur' },
+    password: { required: true, message: '密码不能为空', trigger: 'blur' },
+    mobile: {
+      message: '手机号格式不正确',
+      validator: (_rule, value: string) => {
+        const phoneTest = /^1(3|4|7|5|8)([0-9]{9})/;
+        return phoneTest.test(value);
+      },
+      required: true,
+      trigger: ['input', 'blur'],
+    },
+    // desc: { required: true, message: '请输入备注', trigger: 'blur' },
+    // avatar: { required: true, message: '请选择头像', trigger: 'blur' },
   };
 
   const userStore = useUserStore();
-
   const router = useRouter();
   const route = useRoute();
+  //用户注册
+  type cUserType = {
+    username: string;
+    password: string;
+    mobile: string;
+    desc: string;
+    avatar: string[];
+    file: any;
+  };
+  const cUser = ref<cUserType>({
+    username: '',
+    password: '',
+    mobile: '',
+    desc: '',
+    avatar: [],
+    file: {},
+  });
+  const flieChange = (file: any) => {
+    console.log('file', file);
+    cUser.value.file = file.file.file; //组件三层嵌套
+    const url = URL.createObjectURL(file.file.file);
+    cUser.value.avatar = [url];
+  };
+  const onPositiveClick = () => {
+    cRef.value.validate(async (errors: any) => {
+      if (!errors) {
+        const { username } = cUser.value;
+        let result = await isEnroll({ username });
+        const params = new FormData();
+        for (const i in cUser.value) {
+          params.append(i, cUser.value[i]);
+        }
+        console.log('params', params.get('file'));
+        if (result.code === -1) {
+          const result = await createUser(params);
+          console.log('result', result);
+          closeModal();
+        } else {
+          message.error('用户已存在');
+        }
+      } else {
+        message.error('请填写完整信息');
+      }
+      setSubLoading(false);
+    });
+  };
 
-  const handleSubmit = (e: any) => {
-    e.preventDefault();
+  //用户登录
+  const handleSubmit = () => {
     formRef.value.validate(async (errors: any) => {
       if (!errors) {
         const { username, password } = formInline;
         message.loading('登录中...');
         loading.value = true;
-
         const params: FormState = {
           username,
           password,
         };
         let result = await isEnroll({ username });
-        console.log(result);
         if (result.code === -1) {
           message.destroyAll();
           message.error(`${result.msg},请检查用户名是否正确`);
@@ -161,7 +286,7 @@
           loading.value = false;
         }
       } else {
-        message.error('请填写完整信息，并且进行验证码校验');
+        message.error('请填写完整信息');
       }
     });
   };

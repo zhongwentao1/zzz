@@ -19,12 +19,10 @@ export interface BasicPageParams {
 export async function isEnroll(params: { username: string }) {
   return http.request<BasicResponseModel<string>>(
     {
-      url: '/api/adminapi/is_enroll',
-      method: 'POST',
-      params,
-    },
-
-  );
+    url: '/api/adminapi/is_enroll',
+    method: 'POST',
+    params,
+  });
 }
 /**
  * @description: 获取用户信息
@@ -38,6 +36,24 @@ export async function getUserInfo() {
     {
       isTransformResponse: false,
       joinParamsToUrl: false,
+    }
+  );
+}
+/**
+ * @description: 用户注册
+ */
+export function createUser(params) {
+  return http.request<BasicResponseModel>(
+    {
+      url: '/api/adminapi/user/create',
+      method: 'POST',
+      params,
+      headers: {
+        'Content-Type': 'multipart/form-data;charset=utf-8',
+      },
+    },
+    {
+      withToken: false,
     }
   );
 }
@@ -62,14 +78,11 @@ export function login(params) {
  * @description: 用户修改密码
  */
 export function changePassword(params, uid) {
-  return http.request(
-    {
-      url: `/user/u${uid}/changepw`,
-      method: 'POST',
-      params,
-    },
-
-  );
+  return http.request({
+    url: `/user/u${uid}/changepw`,
+    method: 'POST',
+    params,
+  });
 }
 
 /**
