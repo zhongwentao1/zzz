@@ -67,7 +67,7 @@
   const message = useMessage();
   type from = {
     username: string;
-    mobile: String;
+    mobile: string;
     desc: string;
     avatar: string[];
     file: any;
@@ -92,9 +92,7 @@
         for (const i in formValue.value) {
           params.append(i, formValue.value[i]);
         }
-        console.log(params);
         let result = await updateUserInfo(params);
-        console.log(result);
         if (result.code && result.code === 200) {
           const userinfo = await userStore.getInfo();
           console.log(userinfo);
