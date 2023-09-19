@@ -17,8 +17,7 @@ export interface BasicPageParams {
  * @description: 检验用户用是否重复
  */
 export async function isEnroll(params: { username: string }) {
-  return http.request<BasicResponseModel<string>>(
-    {
+  return http.request<BasicResponseModel<string>>({
     url: '/api/adminapi/is_enroll',
     method: 'POST',
     params,

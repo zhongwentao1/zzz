@@ -110,7 +110,7 @@
     formValue.value = {
       username,
       desc,
-      avatar: [ avatar],
+      avatar: [avatar],
       mobile: mobile.toString(),
       file: {},
     };

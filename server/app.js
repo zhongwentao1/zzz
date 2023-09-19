@@ -9,11 +9,10 @@ var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 
 var UserRouter = require('./routes/admin/UserRouter');
-var InventoryRouter = require('./routes/inventory/inventoryRouter');
-var OrdersRouter = require('./routes/orders/ordersRouter');
+var InventoryRouter = require('./routes/inventory/InventoryRouter');
+var OrdersRouter = require('./routes/orders/OrdersRouter');
 
 var app = express();
-
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
