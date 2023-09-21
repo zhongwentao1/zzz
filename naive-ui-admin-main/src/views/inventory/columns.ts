@@ -6,9 +6,9 @@ export interface ListData {
   suggestion: string;
   _id: string;
   trade: String; //商品名
-  Supply: Number; //进货价
-  quantity: Number; //库存
-  specification: String; //规格
+  Supply: number; //进货价
+  quantity: number; //库存
+  specification: string; //规格
 }
 export const columns: BasicColumn<ListData>[] = [
   {

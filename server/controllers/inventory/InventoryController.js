@@ -31,6 +31,7 @@ const InventoryController = {
   },
   updateInventory: async (req, res) => {
     let result = await InventoryService.updateInventory(req.body);
+    console.log("result", result);
     res.send({
       code: result.matchedCount === 1 ? 200 : -1,
       msg: result.matchedCount === 1 ? "更新成功" : "更新失败",

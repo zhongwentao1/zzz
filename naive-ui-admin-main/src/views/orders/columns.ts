@@ -1,12 +1,11 @@
-import { h } from 'vue';
-import { NAvatar } from 'naive-ui';
 import { BasicColumn } from '@/components/Table';
+import { formatToDateTime } from '@/utils/dateUtil';
 export interface ListData {
   _id: string;
-  cName: String; //创建者
-  Counterparties: String; //交易方
-  amount: Number; //交易金额
-  cDate: String; //创建时间
+  cName: string; //创建者
+  counterparties: string; //交易方
+  amount: number; //交易金额
+  cDate: number; //创建时间
 }
 export const columns: BasicColumn<ListData>[] = [
   {
@@ -21,7 +20,7 @@ export const columns: BasicColumn<ListData>[] = [
   },
   {
     title: '交易方',
-    key: 'Counterparties',
+    key: 'counterparties',
     width: 100,
   },
   {
@@ -33,5 +32,8 @@ export const columns: BasicColumn<ListData>[] = [
     title: '创建时间',
     key: 'cDate',
     width: 120,
+    render(row) {
+      return formatToDateTime(row.cDate);
+    },
   },
 ];

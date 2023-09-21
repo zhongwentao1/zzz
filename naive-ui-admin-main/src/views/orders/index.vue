@@ -1,10 +1,10 @@
 <template>
   <n-card :bordered="false" class="proCard">
-    <BasicForm @register="register" @submit="handleSubmit" @reset="handleReset">
+    <!-- <BasicForm @register="register" @submit="handleSubmit" @reset="handleReset">
       <template #statusSlot="{ model, field }">
         <n-input v-model:value="model[field]" />
       </template>
-    </BasicForm>
+    </BasicForm> -->
 
     <BasicTable
       :columns="columns"
@@ -22,7 +22,7 @@
               <PlusOutlined />
             </n-icon>
           </template>
-          新建
+          新增
         </n-button>
       </template>
 
@@ -31,23 +31,32 @@
       </template>
     </BasicTable>
 
-    <n-modal v-model:show="showModal" :show-icon="false" preset="dialog" title="新建">
+    <n-modal
+      v-model:show="showModal"
+      :show-icon="false"
+      preset="dialog"
+      :title="title == 0 ? '新增' : '编辑'"
+    >
       <n-form
         :model="formParams"
         :rules="rules"
         ref="formRef"
         label-placement="left"
-        :label-width="80"
+        :label-width="120"
         class="py-4"
       >
-        <n-form-item label="名称" path="name">
-          <n-input placeholder="请输入名称" v-model:value="formParams.name" />
+        <n-form-item label="交易方" path="counterparties">
+          <n-input placeholder="请输入交易方" v-model:value="formParams.counterparties" />
         </n-form-item>
-        <n-form-item label="地址" path="address">
-          <n-input type="textarea" placeholder="请输入地址" v-model:value="formParams.address" />
+        <n-form-item label="交易金额" path="amount">
+          <n-input-number placeholder="请输入交易金额" v-model:value="formParams.amount" />
         </n-form-item>
-        <n-form-item label="日期" path="date">
-          <n-date-picker type="datetime" placeholder="请选择日期" v-model:value="formParams.date" />
+        <n-form-item label="交易日期" path="cDate">
+          <n-date-picker
+            type="datetime"
+            placeholder="请选择日期"
+            v-model:value="formParams.cDate"
+          />
         </n-form-item>
       </n-form>
 
@@ -65,24 +74,27 @@
   import { h, reactive, ref } from 'vue';
   import { BasicTable, TableAction } from '@/components/Table';
   import { BasicForm, FormSchema, useForm } from '@/components/Form/index';
-  import { ordersList } from '@/api/orders/orders.ts';
+  import { ordersList, addOrders, updateOrders, delOrders } from '@/api/orders/orders.ts';
   import { columns, ListData } from './columns';
   import { PlusOutlined } from '@vicons/antd';
-  import { useRouter } from 'vue-router';
   import { type FormRules } from 'naive-ui';
+  import { useUser } from '@/store/modules/user';
+  const userStore = useUser();
+  const userInfo = userStore.getUserInfo;
 
   const rules: FormRules = {
-    name: {
+    counterparties: {
       required: true,
       trigger: ['blur', 'input'],
-      message: '请输入名称',
+      message: '请输入交易方',
     },
-    address: {
+    amount: {
+      type: 'number',
       required: true,
       trigger: ['blur', 'input'],
-      message: '请输入地址',
+      message: '请输入交易金额',
     },
-    date: {
+    cDate: {
       type: 'number',
       required: true,
       trigger: ['blur', 'change'],
@@ -214,16 +226,23 @@
     },
   ];
 
-  const router = useRouter();
   const formRef: any = ref(null);
   const actionRef = ref();
+  const title = ref(0); //0新增 1编辑
 
   const showModal = ref(false);
   const formBtnLoading = ref(false);
-  const formParams = reactive({
-    name: '',
-    address: '',
-    date: null,
+  type formType = {
+    cName: string; //创建者
+    counterparties: string; //交易方
+    amount: number; //交易金额
+    cDate: number; //创建时间
+  };
+  let formParams = reactive<formType>({
+    cName: userInfo.username,
+    counterparties: '',
+    amount: 0,
+    cDate: 0,
   });
 
   const actionColumn = reactive({
@@ -285,6 +304,8 @@
   });
 
   function addTable() {
+    title.value = 0;
+    formParams.cDate = new Date().getTime();
     showModal.value = true;
   }
 
@@ -303,13 +324,19 @@
   function confirmForm(e) {
     e.preventDefault();
     formBtnLoading.value = true;
-    formRef.value.validate((errors) => {
+    formRef.value.validate(async (errors) => {
       if (!errors) {
-        window['$message'].success('新建成功');
-        setTimeout(() => {
-          showModal.value = false;
-          reloadTable();
-        });
+        if (title.value === 0) {
+          let res = await addOrders(formParams);
+          console.log('res', res);
+          window['$message'].success('新建成功');
+        } else {
+          let res = await updateOrders(formParams);
+          console.log('res', res);
+          window['$message'].success('编辑成功');
+        }
+        showModal.value = false;
+        reloadTable();
       } else {
         window['$message'].error('请填写完整信息');
       }
@@ -318,15 +345,16 @@
   }
 
   function handleEdit(record: Recordable) {
+    formParams = Object.assign(formParams, record);
     console.log('点击了编辑', record);
-    router.push({ name: 'basic-info', params: { id: record.id } });
+    title.value = 1;
+    showModal.value = true;
   }
 
-  function handleDelete(record: Recordable) {
-    console.log('点击了删除', record);
-    window['$message'].info('点击了删除');
+  async function handleDelete(record: Recordable) {
+    let result = await delOrders({ _id: record._id });
+    result.code === 200 && window['$message'].info(result.msg);
   }
-
 </script>
 
 <style lang="less" scoped></style>

@@ -19,12 +19,10 @@
           新增
         </n-button>
       </template>
-
       <template #toolbar>
         <n-button type="primary" @click="reloadTable">刷新数据</n-button>
       </template>
     </BasicTable>
-
     <n-modal
       v-model:show="showModal"
       :show-icon="false"
@@ -200,6 +198,17 @@
   });
   //重置表单
   function reset() {
+    let n = reactive({
+      trade: '',
+      fig: '',
+      Supply: 0,
+      suggestion: 0,
+      quantity: 0,
+      specification: '18*24',
+      cTime: 0,
+    });
+    formParams = n; // Object.assign(formParams, n);
+    return;
     formParams.trade = '';
     formParams.fig = '';
     formParams.Supply = 0;
@@ -234,13 +243,17 @@
     formRef.value.validate(async (errors) => {
       if (!errors) {
         let res = await getInventory({ trade: formParams.trade });
-        //更新时 商品名存在 并且更新商品名 是 查询到的商品名 才允许更改
-        if (title.value === 1 && res.code === 200 && res.msg[0]._id === formParams._id) {
+        //更新时 商品名不存在直接更新 若 商品名存在 并且更新商品名 是 查询到的商品名 才允许更改
+        if (
+          (title.value === 1 && res.code === -1) ||
+          (res.code === 200 && res.msg[0]._id === formParams._id)
+        ) {
           let result = await updateInventory(formParams);
           window['$message'].success(result.msg);
           if (result.code === 200) {
             reloadTable();
             showModal.value = false;
+            reset();
           }
         } else if (title.value === 0 && res.code === -1) {
           formParams.cTime = new Date().getTime();
@@ -260,6 +273,7 @@
   }
 
   function handleEdit(record: formTpye) {
+    console.log('record', Object.assign(formParams, record));
     formParams = Object.assign(formParams, record);
     title.value = 1;
     showModal.value = true;

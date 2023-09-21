@@ -26,9 +26,12 @@ const UserService = {
     });
   },
   getUserInfo: async (_id) => {
-    return UserModel.find({
-      _id,
-    });
+    return UserModel.find(
+      {
+        _id,
+      },
+      { password: 0 }
+    );
   },
   createUser: async ({ username, password, desc = " ", avatar, mobile }) => {
     return UserModel.create({
